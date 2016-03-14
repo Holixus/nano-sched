@@ -13,7 +13,6 @@
   },
   "dependencies": {
     "nano-promise": "1",
-    "nano-seq-parser": "1.0",
     "nano-json": "1"
   },
   "devDependencies": {
