@@ -1,0 +1,38 @@
+{
+  "name": "nano-sched",
+  "version": "1.0.0",
+  "description": "Flexible anything processing scheduler",
+  "keywords": [
+    "sched"
+  ],
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --reporter spec -u tdd",
+    "test-cov": "istanbul cover node_modules/mocha/bin/_mocha -- --reporter dot -u tdd",
+    "test-travis": "istanbul cover node_modules/mocha/bin/_mocha --report lcovonly -- --reporter dot -u tdd"
+  },
+  "dependencies": {
+    "nano-promise": "1",
+    "nano-seq-parser": "1.0",
+    "nano-json": "1"
+  },
+  "devDependencies": {
+    "core-assert": "0",
+    "clone": "1",
+    "nano-timer": "1",
+    "nano-json": "1",
+    "mocha": "2",
+    "colors": "0",
+    "istanbul": "0"
+  },
+  "author": "Vladimir Antonov <me@holix.ru>",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Holixus/nano-sched.git"
+  },
+  "homepage": "https://github.com/Holixus/nano-sched",
+  "bugs": {
+    "url": "http://github.com/Holixus/nano-sched/issues"
+  },
+  "license": "MIT"
+}
