@@ -22,6 +22,12 @@ var plugins = {
 	d: function (log, data) {
 		data.text += 'd';
 	},
+	delay_5ms: function (log, data) {
+		return timer(5);
+	},
+	cancel: function (log, data) {
+		log.job.sched.cancel();
+	},
 	log: function (log, data) {
 		log.log('blah');
 	},
@@ -61,7 +67,11 @@ var opts = {
 	};
 
 var mill = {
-	signal: function (id) { }
+	signal: function (id) { },
+	process: function (id, log, data) {
+		var pid = id.join('.');
+		return plugins[id](log, data);
+	}
 };
 
 suite('sched', function () {
@@ -80,10 +90,11 @@ suite('sched', function () {
 	});
 
 	test('2.1 - thrown error catching', function (done) {
-		var sched = newSched('test', opts, mill);
+		var sched = newSched('test', opts, mill),
+		    data = { text: '' };
 
 		sched
-			.job('one', { text: '' })
+			.job('one', data)
 				.seq('> a,b,c,d,fail >');
 
 		sched.then(function (data) {
@@ -91,7 +102,29 @@ suite('sched', function () {
 		}).catch(function (err) {
 			//console.log(err);
 			//console.log(sched.opts.console.out);
+			assert.strictEqual(data.text, 'abcd');
 			done();
+		}).catch(done);
+	});
+
+	test('2.1.1 - thrown error catching', function (done) {
+		var sched = newSched('test', opts, mill),
+		    data = { text: '' };
+
+		sched
+			.job('one', data)
+				.seq('> a,b,fail,c,d >');
+
+		sched.then(function (data) {
+			done(Error('not failed'));
+		}).catch(function (err) {
+			//console.log(err);
+			//console.log(sched.opts.console.out);
+			assert.strictEqual(data.text, 'ab');
+			timer(2).then(function () {
+				assert.strictEqual(data.text, 'ab');
+				done();
+			});
 		}).catch(done);
 	});
 
@@ -186,10 +219,10 @@ suite('sched', function () {
 
 		sched
 			.job('one', { text: '' })
-				.seq('> a,b,c,d > pt')
-				.seq('pt > log,warn,noent >');
+				.seq('> a,b,c,delay_5ms,d > pt')
+				.seq('pt > log,warn >');
 
-		sched.cancel();
+		timer(2).then(sched.cancel);
 
 		sched.then(function (data) {
 			done(Error('not cancelled'));

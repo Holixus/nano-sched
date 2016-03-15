@@ -16,6 +16,7 @@ var plugins = {
 	},
 	b: function (log, data) {
 		data.text += 'b';
+		return Promise.resolve();
 	},
 	c: function (log, data) {
 		data.text += 'c';
@@ -24,10 +25,11 @@ var plugins = {
 		data.text += 'd';
 	},
 	log: function (log, data) {
-		log.log('blah');
+		log.log('info', 'blah');
+		log.trace('ok');
 	},
 	warn: function (log, data) {
-		log.warn('blah');
+		log.warn('info', 'blah');
 	},
 	error: function () {
 		var e = Error('error');
@@ -54,6 +56,7 @@ function newSched() {
 	var stoppers = {};
 
 	return {
+		name: 'job.js',
 		opts: {
 			dumps_folder: '',
 			console: {
@@ -66,9 +69,11 @@ function newSched() {
 		stopper: function (id) {
 			return stoppers[id] || (stoppers[id] = newStopper(id));
 		},
-		process: function (id, log, data) {
-			var pid = id.join('.');
-			return plugins[id](log, data);
+		mill: {
+			process: function (id, log, data) {
+				var pid = id.join('.');
+				return plugins[id](log, data);
+			}
 		}
 	};
 }
@@ -76,7 +81,7 @@ function newSched() {
 
 suite('job', function () {
 	test('1 - just sequence', function (done) {
-		var sched = newSched(),
+		var sched = newSched('1'),
 		    job = newJob('one', { text: '' }, sched);
 
 		job.seq('> a,b,c,d >');
@@ -88,8 +93,9 @@ suite('job', function () {
 	});
 
 	test('2.1 - thrown error catching', function (done) {
-		var sched = newSched(),
-		    job = newJob('one', { text: '' }, sched);
+		var sched = newSched('2.1'),
+		    data = { text: '' },
+		    job = newJob('one', data, sched);
 
 		job.seq('> a,b,c,d,fail >');
 
@@ -98,12 +104,30 @@ suite('job', function () {
 		}).catch(function (err) {
 			//console.log(err);
 			//console.log(sched.opts.console.out);
+			assert.strictEqual(data.text, 'abcd');
+			done();
+		}).catch(done);
+	});
+
+	test('2.1.1 - thrown error catching and aborting', function (done) {
+		var sched = newSched('2.1.1'),
+		    data = { text: '' },
+		    job = newJob('one', data, sched);
+
+		job.seq('> a,b,fail,c,d >');
+
+		job.then(function (data) {
+			done(Error('not failed'));
+		}).catch(function (err) {
+			//console.log(err);
+			//console.log(sched.opts.console.out);
+			assert.strictEqual(data.text, 'ab');
 			done();
 		}).catch(done);
 	});
 
 	test('2.2 - thrown error catching with stage', function (done) {
-		var sched = newSched(),
+		var sched = newSched('2.2'),
 		    job = newJob('one', { text: '' }, sched);
 
 		job.seq('> a,b,c,d,error >');
@@ -118,7 +142,7 @@ suite('job', function () {
 	});
 
 	test('3.1 - logger and ENOENT error', function (done) {
-		var sched = newSched(),
+		var sched = newSched('3.1'),
 		    job = newJob('one', { text: '' }, sched);
 
 		job.seq('> a,b,c,d,log,warn,noent >');
@@ -134,7 +158,7 @@ suite('job', function () {
 	});
 
 	test('3.2 - logger and ENOENT error with stage', function (done) {
-		var sched = newSched(),
+		var sched = newSched('3.2'),
 		    job = newJob('one', { text: '' }, sched);
 
 		job.seq('> a,b,c,d,log,warn,stnoent >');
@@ -150,7 +174,7 @@ suite('job', function () {
 	});
 
 	test('4.1 - two sequences', function (done) {
-		var sched = newSched(),
+		var sched = newSched('4.1'),
 		    job = newJob('one', { text: '' }, sched);
 
 		job.seq('> a,b,c,d > pt');
@@ -167,7 +191,7 @@ suite('job', function () {
 	});
 
 	test('4.2 - two sequences simple data type', function (done) {
-		var sched = newSched(),
+		var sched = newSched('4.2'),
 		    job = newJob('one', '', sched);
 
 		job.seq('> > pt');
@@ -184,7 +208,7 @@ suite('job', function () {
 	});
 
 	test('5 - cancelling', function (done) {
-		var sched = newSched(),
+		var sched = newSched('5'),
 		    job = newJob('one', { text: '' }, sched);
 
 		job.seq('> a,b,c,d > pt');

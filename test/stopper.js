@@ -40,7 +40,6 @@ suite('stopper', function () {
 		});
 
 		assert(!s.isFree());
-
 	});
 
 	//var sc = new Sched('seq');

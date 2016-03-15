@@ -42,8 +42,8 @@ suite('mill', function () {
 			assert.strictEqual(data.text, 'done');
 			return timer(2).then(function () {
 				var log_rows = opts.console.out;
-				assert(log_rows[0].match(/^ \d\.\d{3}s start$/));
-				assert(log_rows[1].match(/^ \d\.\d{3}s finish$/));
+				assert(log_rows[0].match(/^ \d\.\d{3}s test.start$/));
+				assert(log_rows[1].match(/^ \d\.\d{3}s test.finish$/));
 				done();
 			});
 		}).catch(done);
