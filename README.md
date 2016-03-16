@@ -7,6 +7,8 @@
 [![Downloads][downloads-image]][downloads-url]
 
 # nano-sched
+
+[![Join the chat at https://gitter.im/Holixus/nano-sched](https://badges.gitter.im/Holixus/nano-sched.svg)](https://gitter.im/Holixus/nano-sched?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 Flexible anything processing scheduler
 
 
