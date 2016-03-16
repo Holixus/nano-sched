@@ -36,7 +36,9 @@ suite('mill', function () {
 
 		sched
 			.job('one', data)
-				.seq('> d >');
+				.seq('> d >')
+				.up
+			.start();
 
 		sched.then(function () {
 			assert.strictEqual(data.text, 'done');

@@ -9,7 +9,7 @@ var mill = Mill({
 	dist_folder: './dist',
 	dumps_folder: './log',
 	rules: {
-		'js': [ /^.*\.js$/, ' run > file.load, upcase, file.save > ' ]
+		'js': [ /^.*\.js$/, ' > file.load, upcase, file.save > ' ]
 	}
 });
 
@@ -37,7 +37,7 @@ mill.install('read-tree', function readtree(log, opts) {
 });
 
 mill.install('files', function (log, opts) {
-	var sched = log.job.sched,
+	var sched = mill.sched('build'),
 	    rules = opts.rules,
 	    files = opts.files;
 
@@ -60,9 +60,14 @@ mill.install('files', function (log, opts) {
 			});
 		});
 	}
+	log.job.sched.then(function () {
+		sched.start();
+	});
 });
 
 mill
 	.sched('init')
 		.job('init', mill.opts)
-			.seq(' > read-plugins | (read-tree, files) > run ')
+			.seq(' > (read-plugins | read-tree), files > ')
+			.up
+		.start();

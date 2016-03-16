@@ -81,7 +81,9 @@ suite('sched', function () {
 
 		sched
 			.job('one', data)
-				.seq('> a,b,c,d >');
+				.seq('> a,b,c,d >')
+				.up
+			.start();
 
 		sched.then(function () {
 			assert.strictEqual(data.text, 'abcd');
@@ -95,7 +97,9 @@ suite('sched', function () {
 
 		sched
 			.job('one', data)
-				.seq('> a,b,c,d,fail >');
+				.seq('> a,b,c,d,fail >')
+				.up
+			.start();
 
 		sched.then(function (data) {
 			done(Error('not failed'));
@@ -113,7 +117,9 @@ suite('sched', function () {
 
 		sched
 			.job('one', data)
-				.seq('> a,b,fail,c,d >');
+				.seq('> a,b,fail,c,d >')
+				.up
+			.start();
 
 		sched.then(function (data) {
 			done(Error('not failed'));
@@ -133,7 +139,9 @@ suite('sched', function () {
 
 		sched
 			.job('one', { text: '' })
-				.seq('> a,b,c,d,error >');
+				.seq('> a,b,c,d,error >')
+				.up
+			.start();
 
 		sched.then(function (data) {
 			done(Error('not failed'));
@@ -149,7 +157,9 @@ suite('sched', function () {
 
 		sched
 			.job('one', { text: '' })
-				.seq('> a,b,c,d,log,warn,noent >');
+				.seq('> a,b,c,d,log,warn,noent >')
+				.up
+			.start();
 
 		sched.then(function (data) {
 			done(Error('not failed'));
@@ -166,7 +176,9 @@ suite('sched', function () {
 
 		sched
 			.job('one', { text: '' })
-				.seq('> a,b,c,d,log,warn,stnoent >');
+				.seq('> a,b,c,d,log,warn,stnoent >')
+				.up
+			.start();
 
 		sched.then(function (data) {
 			done(Error('not failed'));
@@ -184,7 +196,9 @@ suite('sched', function () {
 		sched
 			.job('one', { text: '' })
 				.seq('> a,b,c,d > pt')
-				.seq('pt > log,warn,noent >');
+				.seq('pt > log,warn,noent >')
+				.up
+			.start();
 
 		sched.then(function (data) {
 			done(Error('not failed'));
@@ -202,7 +216,9 @@ suite('sched', function () {
 		sched
 			.job('one', '')
 				.seq('> > pt')
-				.seq('pt > log,warn,noent >');
+				.seq('pt > log,warn,noent >')
+				.up
+			.start();
 
 		sched.then(function (data) {
 			done(Error('not failed'));
@@ -220,7 +236,9 @@ suite('sched', function () {
 		sched
 			.job('one', { text: '' })
 				.seq('> a,b,c,delay_5ms,d > pt')
-				.seq('pt > log,warn >');
+				.seq('pt > log,warn >')
+				.up
+			.start();
 
 		timer(2).then(sched.cancel);
 
@@ -245,7 +263,9 @@ suite('sched', function () {
 				.up
 			.job('two', d2)
 				.seq('> d,c,b,a > pt')
-				.seq('pt > >');
+				.seq('pt > >')
+				.up
+			.start();
 
 		sched.then(function (data) {
 			assert.strictEqual(d1.text, 'abcd');

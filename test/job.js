@@ -53,7 +53,10 @@ var plugins = {
 };
 
 function newSched() {
-	var stoppers = {};
+	var stoppers = {
+		start: newStopper('start'),
+		finish: newStopper('finish')
+	};
 
 	return {
 		name: 'job.js',
@@ -74,6 +77,11 @@ function newSched() {
 				var pid = id.join('.');
 				return plugins[id](log, data);
 			}
+		},
+		start: function () {
+			var start = stoppers.start;
+			if (start.isFree() === null)
+				start.waitFor(Promise.resolve());
 		}
 	};
 }
@@ -85,6 +93,8 @@ suite('job', function () {
 		    job = newJob('one', { text: '' }, sched);
 
 		job.seq('> a,b,c,d >');
+
+		sched.start();
 
 		job.then(function (data) {
 			assert.strictEqual(data.text, 'abcd');
@@ -98,6 +108,8 @@ suite('job', function () {
 		    job = newJob('one', data, sched);
 
 		job.seq('> a,b,c,d,fail >');
+
+		sched.start();
 
 		job.then(function (data) {
 			done(Error('not failed'));
@@ -116,6 +128,8 @@ suite('job', function () {
 
 		job.seq('> a,b,fail,c,d >');
 
+		sched.start();
+
 		job.then(function (data) {
 			done(Error('not failed'));
 		}).catch(function (err) {
@@ -132,6 +146,8 @@ suite('job', function () {
 
 		job.seq('> a,b,c,d,error >');
 
+		sched.start();
+
 		job.then(function (data) {
 			done(Error('not failed'));
 		}).catch(function (err) {
@@ -146,6 +162,8 @@ suite('job', function () {
 		    job = newJob('one', { text: '' }, sched);
 
 		job.seq('> a,b,c,d,log,warn,noent >');
+
+		sched.start();
 
 		job.then(function (data) {
 			done(Error('not failed'));
@@ -162,6 +180,8 @@ suite('job', function () {
 		    job = newJob('one', { text: '' }, sched);
 
 		job.seq('> a,b,c,d,log,warn,stnoent >');
+
+		sched.start();
 
 		job.then(function (data) {
 			done(Error('not failed'));
@@ -180,6 +200,8 @@ suite('job', function () {
 		job.seq('> a,b,c,d > pt');
 		job.seq('pt > log,warn,noent >');
 
+		sched.start();
+
 		job.then(function (data) {
 			done(Error('not failed'));
 		}).catch(function (err) {
@@ -197,6 +219,8 @@ suite('job', function () {
 		job.seq('> > pt');
 		job.seq('pt > log,warn,noent >');
 
+		sched.start();
+
 		job.then(function (data) {
 			done(Error('not failed'));
 		}).catch(function (err) {
@@ -213,6 +237,8 @@ suite('job', function () {
 
 		job.seq('> a,b,c,d > pt');
 		job.seq('pt > log,warn,noent >');
+
+		sched.start();
 
 		job.cancel();
 
