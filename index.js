@@ -10,6 +10,9 @@ function Mill(opts) {
 
 	this.opts = opts;
 
+	if (!opts.quiet)
+		opts.quiet = Object.create(null);
+
 	this.time = function () {
 		var d = process.hrtime(start_time);
 		return (d[0] + d[1]/1e9).toFixed(3);
@@ -24,14 +27,17 @@ function Mill(opts) {
 }
 
 Mill.prototype = {
-	time: undefined,
 	signal: function (name) {
-		(this.opts.console || /* istanbul ignore next */ console).log('%ss %s', this.time(), name.replace('#','.'));
+		if (!this.opts.quiet.timing)
+			(this.opts.console || /* istanbul ignore next */ console).log('%ss %s', this.time(), name.replace('#','.'));
 	},
+
 	sched: function (name) {
 		return newSched(name, this.opts, this);
 	}
 };
+
+
 
 /* ------------------------------------------------------------------------ */
 module.exports = function (opts) {

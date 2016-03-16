@@ -37,7 +37,7 @@ mill.install('read-tree', function readtree(log, opts) {
 });
 
 mill.install('files', function (log, opts) {
-	var sched = mill.sched('build'),
+	var sched = mill.sched(' rules'),
 	    rules = opts.rules,
 	    files = opts.files;
 
@@ -60,13 +60,11 @@ mill.install('files', function (log, opts) {
 			});
 		});
 	}
-	log.job.sched.then(function () {
-		sched.start();
-	});
+	return sched.start();
 });
 
 mill
-	.sched('init')
+	.sched('build')
 		.job('init', mill.opts)
 			.seq(' > (read-plugins | read-tree), files > ')
 			.up

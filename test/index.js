@@ -13,6 +13,9 @@ var plugins = {
 		return timer(5).then(function () {
 			data.text += 'done';
 		});
+	},
+	fail: function (log, data) {
+		throw Error('fail');
 	}
 };
 
@@ -27,11 +30,12 @@ var opts = {
 		plugins: plugins
 	};
 
-var mill = require('../index.js')(opts)
+var Mill = require('../index.js');
 
 suite('mill', function () {
-	test('1 - just sched', function (done) {
-		var sched = mill.sched('test'),
+	test('1 - then sched', function (done) {
+		var mill = Mill(opts),
+		    sched = mill.sched('test'),
 		    data = { text: '' };
 
 		sched
@@ -42,12 +46,35 @@ suite('mill', function () {
 
 		sched.then(function () {
 			assert.strictEqual(data.text, 'done');
-			return timer(2).then(function () {
+			timer(2).then(function () {
 				var log_rows = opts.console.out;
 				assert(log_rows[0].match(/^ \d\.\d{3}s test.start$/));
 				assert(log_rows[1].match(/^ \d\.\d{3}s test.finish$/));
 				done();
 			});
+		}).catch(done);
+	});
+
+	test('2 - then failed sched', function (done) {
+		var mill = Mill({
+		    	plugins: plugins,
+		    	console: opts.console,
+		    	quiet: { timing:1 },
+		    }),
+		    sched = mill.sched('test'),
+		    data = { text: '' };
+
+		sched
+			.job('one', data)
+				.seq('> fail >')
+				.up
+			.start();
+
+		sched.then(function () {
+			done(Error('not failed'));
+		}).catch(function (err) {
+			assert.strictEqual(err.message, 'fail');
+			done();
 		}).catch(done);
 	});
 });
