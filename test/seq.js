@@ -9,6 +9,27 @@ var newSeq = require('../lib/seq.js'),
 
 suite('seq', function () {
 
+	test('empty', function (done) {
+		var data = {
+		    	text: ''
+		    },
+		    started = 0,
+		    ast = parseSeq('a >> b'),
+		    s = newSeq({
+		    	stage: function (ps, id) {
+		    		return ps.then(function () {
+		    			data.text += id.join('.');
+		    		});
+		    	}
+		    }, timer(3).then(function () { started = 1; }), ast[2]);
+
+		s.then(function () {
+			assert.strictEqual(started, 1);
+			assert.strictEqual(data.text, '');
+			done();
+		}).catch(done);
+	});
+
 	test('sequental', function (done) {
 		var data = {
 		    	text: ''
