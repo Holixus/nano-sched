@@ -197,8 +197,10 @@ suite('job', function () {
 		var sched = newSched('4.1'),
 		    job = newJob('one', { text: '' }, sched);
 
-		job.seq('> a,b,c,d > pt');
-		job.seq('pt > log,warn,noent >');
+		job.seq([
+			'> a,b,c,d > pt',
+			'pt > log,warn,noent >'
+		]);
 
 		sched.start();
 
