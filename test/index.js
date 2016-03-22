@@ -9,13 +9,31 @@ var assert = require('core-assert'),
 
 
 var plugins = {
+	a: function (log, data) {
+		return timer(1).then(function () {
+			data.text += '[a-done]';
+		});
+	},
+	b: function (log, data) {
+		return timer(2).then(function () {
+			data.text += '[b-done]';
+		});
+	},
+	c: function (log, data) {
+		return timer(3).then(function () {
+			data.text += '[c-done]';
+		});
+	},
 	d: function (log, data) {
 		return timer(5).then(function () {
-			data.text += 'done';
+			data.text += '[d-done]';
 		});
 	},
 	fail: function (log, data) {
 		throw Error('fail');
+	},
+	cancel: function (log, data) {
+		throw Promise.CANCEL_REASON
 	}
 };
 
@@ -45,7 +63,7 @@ suite('mill', function () {
 			.start();
 
 		sched.then(function () {
-			assert.strictEqual(data.text, 'done');
+			assert.strictEqual(data.text, '[d-done]');
 			timer(2).then(function () {
 				var log_rows = opts.console.out;
 				assert(log_rows[0].match(/^ \d\.\d{3}s test.start$/));
@@ -74,6 +92,34 @@ suite('mill', function () {
 			done(Error('not failed'));
 		}).catch(function (err) {
 			assert.strictEqual(err.message, 'fail');
+			done();
+		}).catch(done);
+	});
+
+	test('3 - cancell of a sequence doesn`t abort other jobs', function (done) {
+		var mill = Mill({
+		    	plugins: plugins,
+		    	console: opts.console,
+		    	quiet: { timing:1 },
+		    }),
+		    sched = mill.sched('test'),
+		    data = { text: '' },
+		    data2 = { text: '' };
+
+		sched
+			.job('one', data)
+				.seq('> a,b,c,d >')
+				.seq('> cancel,a,b,c,d >')
+				.up
+			.job('one', data2)
+				.seq('> d,c,b,a >')
+				.seq('> cancel,a,b,c,d >')
+				.up
+			.start();
+
+		sched.then(function () {
+			assert(data.text, '[a-done][b-done][c-done][d-done]');
+			assert(data2.text, '[d-done][c-done][b-done][a-done]');
 			done();
 		}).catch(done);
 	});
