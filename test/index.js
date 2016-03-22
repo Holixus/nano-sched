@@ -32,7 +32,10 @@ var plugins = {
 	fail: function (log, data) {
 		throw Error('fail');
 	},
-	cancel: function (log, data) {
+	'cancel-job': function (log, data) {
+		log.job.cancel();
+	},
+	'cancel-seq': function (log, data) {
 		throw Promise.CANCEL_REASON
 	}
 };
@@ -109,17 +112,48 @@ suite('mill', function () {
 		sched
 			.job('one', data)
 				.seq('> a,b,c,d >')
-				.seq('> cancel,a,b,c,d >')
+				.seq('> cancel-seq,a,b,c,d >')
 				.up
 			.job('one', data2)
 				.seq('> d,c,b,a >')
-				.seq('> cancel,a,b,c,d >')
+				.seq('> cancel-seq,a,b,c,d >')
 				.up
 			.start();
 
 		sched.then(function () {
 			assert(data.text, '[a-done][b-done][c-done][d-done]');
 			assert(data2.text, '[d-done][c-done][b-done][a-done]');
+			done();
+		}).catch(done);
+	});
+
+	test('4 - cancell of a job doesn`t abort scheduler', function (done) {
+		var mill = Mill({
+		    	plugins: plugins,
+		    	console: opts.console,
+		    	quiet: { timing:1 },
+		    }),
+		    sched = mill.sched('test'),
+		    data = { text: '' },
+		    data2 = { text: '' };
+
+		var jobA = 
+			sched
+				.job('one', data)
+					.seq('> a,b,c,d >')
+					.seq('> cancel-seq,a,b,c,d >');
+
+		var jobB = 
+			sched
+				.job('one', data2)
+					.seq('> d,c,b,a >')
+					.seq('> cancel-job,a,b,c,d >')
+					.up
+				.start();
+
+		sched.then(function () {
+			assert.strictEqual(data.text, '[a-done][b-done][c-done][d-done]');
+			assert.strictEqual(data2.text, '');
 			done();
 		}).catch(done);
 	});
