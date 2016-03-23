@@ -37,7 +37,8 @@ var plugins = {
 	},
 	'cancel-seq': function (log, data) {
 		throw Promise.CANCEL_REASON
-	}
+	},
+	test: __dirname+'/../samples/plugins/test.js'
 };
 
 var opts = {
@@ -61,12 +62,12 @@ suite('mill', function () {
 
 		sched
 			.job('one', data)
-				.seq('> d >')
+				.seq('> test.d, test.c, test.b, test.a >')
 				.up
 			.start();
 
 		sched.then(function () {
-			assert.strictEqual(data.text, '[d-done]');
+			assert.strictEqual(data.text, '[d-done][c-done][b-done][a-done]');
 			timer(2).then(function () {
 				var log_rows = opts.console.out;
 				assert(log_rows[0].match(/^ \d\.\d{3}s test.start$/));
