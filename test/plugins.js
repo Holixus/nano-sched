@@ -46,6 +46,20 @@ suite('plugins', function () {
 		done();
 	});
 
+	test('check post compile file', function (done) {
+		var p = pluginsInject({}),
+		    A = 'werewr',
+		    B = 5.5;
+		p.install('a', "var assert = require('core-assert');\n\
+			module.exports = function (a,b) {\n\
+			assert.strictEqual(a, 'werewr');\n\
+			assert.strictEqual(b, 5.5);\n\
+			return 5;\n\
+		};\n", 'filename.js');
+		assert.strictEqual(p.process(['a'], A, B), 5);
+		done();
+	});
+
 	test('call uninstalled plugin', function (done) {
 		var p = pluginsInject({}),
 		    A = 'werewr',
