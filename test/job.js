@@ -92,7 +92,7 @@ suite('job', function () {
 		var sched = newSched('1'),
 		    job = newJob('one', { text: '' }, sched);
 
-		job.seq('> a,b,c,d >');
+		job.seq([ '> a,b,c,d >' ]);
 
 		sched.start();
 

@@ -44,6 +44,7 @@ suite('parse sequences', function () {
 
 	massive('good expressions', parse, [
 		'>>', [ 'route', 'start', undefined, 'finish' ],
+		'> file.dont-overwrite, file.save >', [ 'route', 'start', [ 'seq', [ 'stage', 'file', 'dont-overwrite' ], [ 'stage', 'file', 'save' ] ], 'finish' ],
 		'> a >', [ 'route', 'start', [ 'stage', 'a' ], 'finish' ],
 		'run > ass012_2 > menu', [ 'route', 'run', [ 'stage', 'ass012_2' ], 'menu' ],
 		'l10n-collected > a.b > l10n-processed', [ 'route', 'l10n-collected', [ 'stage', 'a', 'b' ], 'l10n-processed' ],
