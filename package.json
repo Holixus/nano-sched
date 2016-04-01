@@ -1,6 +1,6 @@
 {
   "name": "nano-sched",
-  "version": "1.2.10",
+  "version": "1.2.11",
   "description": "Flexible anything processing scheduler",
   "keywords": [
     "sched"
