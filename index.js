@@ -12,6 +12,13 @@ function Mill(opts) {
 
 	if (!opts.quiet)
 		opts.quiet = function () {};
+	else {
+		if (typeof opts.quiet === 'string')
+			opts.quiet = (function (qs) { return function (id) { return qs.indexOf(id) >= 0; }; })(opts.quiet.split(/\s*,\s*/));
+
+		if (typeof opts.quiet !== 'function')
+			throw Error('opts.quiet isn`t function type');
+	}
 
 	this.time = function () {
 		var d = process.hrtime(start_time);

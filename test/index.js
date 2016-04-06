@@ -81,7 +81,7 @@ suite('mill', function () {
 		var mill = Mill({
 		    	plugins: plugins,
 		    	console: opts.console,
-		    	quiet: function (id) { return id === 'timing'; },
+		    	quiet: 'timing',
 		    }),
 		    sched = mill.sched('test'),
 		    data = { text: '' };
@@ -157,4 +157,18 @@ suite('mill', function () {
 			done();
 		}).catch(done);
 	});
+
+	test('5 - fait by opts.quiet type', function (done) {
+		try {
+			var mill = Mill({
+			    	plugins: plugins,
+			    	console: opts.console,
+			    	quiet: [ 'timing' ],
+			    });
+		} catch (e) {
+			return done();
+		}
+		done(Error('not failed'));
+	});
+
 });
