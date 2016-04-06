@@ -131,8 +131,7 @@ suite('mill', function () {
 	test('4 - cancell of a job doesn`t abort scheduler', function (done) {
 		var mill = Mill({
 		    	plugins: plugins,
-		    	console: opts.console,
-		    	quiet: function (id) { return id === 'timing'; },
+		    	console: opts.console
 		    }),
 		    sched = mill.sched('test'),
 		    data = { text: '' },

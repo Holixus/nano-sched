@@ -28,7 +28,7 @@ function Mill(opts) {
 
 Mill.prototype = {
 	signal: function (name) {
-		if (!this.opts.quiet.timing)
+		if (!this.opts.quiet('timing'))
 			(this.opts.console || /* istanbul ignore next */ console).log('%ss %s', this.time(), name.replace('#','.'));
 	},
 

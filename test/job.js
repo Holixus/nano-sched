@@ -52,7 +52,7 @@ var plugins = {
 	}
 };
 
-function newSched() {
+function newSched(woquiet) {
 	var stoppers = {
 		start: newStopper('start'),
 		finish: newStopper('finish')
@@ -104,7 +104,7 @@ suite('job', function () {
 	});
 
 	test('2.1 - thrown error catching', function (done) {
-		var sched = newSched('2.1'),
+		var sched = newSched(),
 		    data = { text: '' },
 		    job = newJob('one', data, sched);
 
@@ -170,7 +170,7 @@ suite('job', function () {
 			done(Error('not failed'));
 		}).catch(function (err) {
 			//console.log(err);
-			assert.strictEqual(err.code, 'ENOENT');
+			assert.strictEqual(err.code, 'ENOENT', err);
 			//console.log(sched.opts.console.out);
 			done();
 		}).catch(done);
@@ -188,7 +188,7 @@ suite('job', function () {
 			done(Error('not failed'));
 		}).catch(function (err) {
 			//console.log(err);
-			assert.strictEqual(err.code, 'ENOENT');
+			assert.strictEqual(err.code, 'ENOENT', err);
 			//console.log(sched.opts.console.out);
 			done();
 		}).catch(done);
@@ -209,7 +209,7 @@ suite('job', function () {
 			done(Error('not failed'));
 		}).catch(function (err) {
 			//console.log(err);
-			assert.strictEqual(err.code, 'ENOENT');
+			assert.strictEqual(err.code, 'ENOENT', err);
 			//console.log(sched.opts.console.out);
 			done();
 		}).catch(done);
@@ -228,7 +228,7 @@ suite('job', function () {
 			done(Error('not failed'));
 		}).catch(function (err) {
 			//console.log(err);
-			assert.strictEqual(err.code, 'ENOENT');
+			assert.strictEqual(err.code, 'ENOENT', err);
 			//console.log(sched.opts.console.out);
 			done();
 		}).catch(done);
