@@ -68,7 +68,7 @@ function newSched() {
 				error: function () { this.out.push('E'+util.format.apply(util, arguments)); },
 				warn:  function () { this.out.push('W'+util.format.apply(util, arguments)); }
 			},
-			quiet: {}
+			quiet: function () {}
 		},
 		stopper: function (id) {
 			return stoppers[id] || (stoppers[id] = newStopper(id));

@@ -81,7 +81,7 @@ suite('mill', function () {
 		var mill = Mill({
 		    	plugins: plugins,
 		    	console: opts.console,
-		    	quiet: { timing:1 },
+		    	quiet: function (id) { return id === 'timing'; },
 		    }),
 		    sched = mill.sched('test'),
 		    data = { text: '' };
@@ -104,7 +104,7 @@ suite('mill', function () {
 		var mill = Mill({
 		    	plugins: plugins,
 		    	console: opts.console,
-		    	quiet: { timing:1 },
+		    	quiet: function (id) { return id === 'timing'; },
 		    }),
 		    sched = mill.sched('test'),
 		    data = { text: '' },
@@ -132,7 +132,7 @@ suite('mill', function () {
 		var mill = Mill({
 		    	plugins: plugins,
 		    	console: opts.console,
-		    	quiet: { timing:1 },
+		    	quiet: function (id) { return id === 'timing'; },
 		    }),
 		    sched = mill.sched('test'),
 		    data = { text: '' },

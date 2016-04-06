@@ -165,7 +165,7 @@ suite('sched', function () {
 			done(Error('not failed'));
 		}).catch(function (err) {
 			//console.log(err);
-			assert.strictEqual(err.code, 'ENOENT');
+			assert.strictEqual(err.code, 'ENOENT', err);
 			//console.log(sched.opts.console.out);
 			done();
 		}).catch(done);
@@ -184,7 +184,7 @@ suite('sched', function () {
 			done(Error('not failed'));
 		}).catch(function (err) {
 			//console.log(err);
-			assert.strictEqual(err.code, 'ENOENT');
+			assert.strictEqual(err.code, 'ENOENT', err);
 			//console.log(sched.opts.console.out);
 			done();
 		}).catch(done);
@@ -204,7 +204,7 @@ suite('sched', function () {
 			done(Error('not failed'));
 		}).catch(function (err) {
 			//console.log(err);
-			assert.strictEqual(err.code, 'ENOENT');
+			assert.strictEqual(err.code, 'ENOENT', err);
 			//console.log(sched.opts.console.out);
 			done();
 		}).catch(done);
@@ -224,7 +224,7 @@ suite('sched', function () {
 			done(Error('not failed'));
 		}).catch(function (err) {
 			//console.log(err);
-			assert.strictEqual(err.code, 'ENOENT');
+			assert.strictEqual(err.code, 'ENOENT', err);
 			//console.log(sched.opts.console.out);
 			done();
 		}).catch(done);

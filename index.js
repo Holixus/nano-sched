@@ -11,7 +11,7 @@ function Mill(opts) {
 	this.opts = opts;
 
 	if (!opts.quiet)
-		opts.quiet = Object.create(null);
+		opts.quiet = function () {};
 
 	this.time = function () {
 		var d = process.hrtime(start_time);
