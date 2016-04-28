@@ -1,6 +1,6 @@
 {
   "name": "nano-sched",
-  "version": "1.3.7",
+  "version": "1.4.0",
   "description": "Flexible anything processing scheduler",
   "keywords": [
     "sched"
@@ -12,8 +12,9 @@
     "test-travis": "istanbul cover node_modules/mocha/bin/_mocha --report lcovonly -- --reporter dot -u tdd"
   },
   "dependencies": {
+    "nano-json": "1",
     "nano-promise": "1",
-    "nano-json": "1"
+    "nano-unifs": "1"
   },
   "devDependencies": {
     "core-assert": "0",
