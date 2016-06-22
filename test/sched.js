@@ -45,6 +45,9 @@ var plugins = {
 	noent: function () {
 		fs.readFileSync('qq');
 	},
+	"job-cancel": function (log) {
+		log.job.cancel();
+	},
 	stnoent: function () {
 		try {
 			fs.readFileSync('qq');
@@ -67,7 +70,7 @@ var opts = {
 	};
 
 var mill = {
-	signal: function (id) { },
+	signal: function (id) { /*console.log('signal-%s', id);*/ },
 	process: function (id, log, data) {
 		var pid = id.join('.');
 		return plugins[id](log, data);
@@ -152,6 +155,35 @@ suite('sched', function () {
 		}).catch(done);
 	});
 
+	test('2.3 - force job cancel', function (done) {
+		var sched = newSched('test', opts, mill),
+		    data = { text: '' },
+		    data2 = { text: '' },
+		    data3 = { text: '' };
+
+		sched
+			.job('one', data)
+				.seq('> a,b,job-cancel,c > r')
+				.seq('r > d >')
+				.up
+			.job('two', data2)
+				.seq('> a,b,c > r')
+				.seq('r > d >')
+				.up
+			.job('three', data3)
+				.seq('> a,b,c > r1')
+				.seq('r1 > d >')
+				.up
+			.start();
+
+		sched.then(function () {
+			assert.strictEqual(data.text, 'ab');
+			assert.strictEqual(data2.text, 'abcd');
+			assert.strictEqual(data3.text, 'abcd');
+			done();
+		}).catch(done);
+	});
+
 	test('3.1 - logger and ENOENT error', function (done) {
 		var sched = newSched('test', opts, mill);
 
@@ -161,7 +193,7 @@ suite('sched', function () {
 				.up
 			.start();
 
-		sched.then(function (data) {
+		sched.then(function () {
 			done(Error('not failed'));
 		}).catch(function (err) {
 			//console.log(err);
@@ -180,7 +212,7 @@ suite('sched', function () {
 				.up
 			.start();
 
-		sched.then(function (data) {
+		sched.then(function () {
 			done(Error('not failed'));
 		}).catch(function (err) {
 			//console.log(err);
@@ -200,7 +232,7 @@ suite('sched', function () {
 				.up
 			.start();
 
-		sched.then(function (data) {
+		sched.then(function () {
 			done(Error('not failed'));
 		}).catch(function (err) {
 			//console.log(err);
